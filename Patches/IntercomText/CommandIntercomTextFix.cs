@@ -21,13 +21,13 @@ namespace FacilityManagement.Patches.IntercomText
 
             // Facility Management Fix
             int index = newInstructions.FindLastIndex(instruction => instruction.opcode == OpCodes.Ldsfld);
-            newInstructions[index].operand = Field(typeof(FacilityManagement), nameof(FacilityManagement.Singleton));
+            newInstructions[index].operand = Field(typeof(FacilityManagement), nameof(FacilityManagement.Instance));
 
             newInstructions.RemoveRange(++index, 2);
             newInstructions.InsertRange(index, new CodeInstruction[]
             {
                 new(OpCodes.Ldarg_0),
-                new(OpCodes.Stfld, Field(typeof(FacilityManagement),nameof(FacilityManagement.Singleton.CustomText))),
+                new(OpCodes.Stfld, Field(typeof(FacilityManagement),nameof(FacilityManagement.Instance.CustomText))),
             });
 
             for (int z = 0; z < newInstructions.Count; z++)

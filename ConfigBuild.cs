@@ -4,8 +4,11 @@ using System.Collections.Generic;
 using UnityEngine;
 using Exiled.API.Extensions;
 using System;
+using System.Linq;
 using Exiled.API.Features;
 using Exiled.API.Enums;
+using Exiled.API.Features.Doors;
+using Scp914;
 
 namespace FacilityManagement
 {
@@ -19,16 +22,74 @@ namespace FacilityManagement
 
     public class DoorBuild
     {
+        public DoorType DoorType { get; set; }
         public float? Health { get; set; }
         public KeycardPermissions? RequiredPermission { get; set; }
         public bool? RequireAllPermission { get; set; }
         public DoorDamageType? DamageTypeIgnored { get; set; }
+
+        public void Setup()
+        {
+            foreach (var door in Door.List)
+            {
+                if (door.Type != DoorType) continue;
+                
+                BreakableDoor breakabledoor = door.As<BreakableDoor>();
+
+                if (FacilityManagement.Instance.Config.Debug)
+                {
+                    string Debug = $"[CustomDoor] : {DoorType}\n";
+                    Debug += $"Health: {(breakabledoor is null ? "Nan" : breakabledoor.Health)} => {Health.Value}\n";
+                    Debug += $"IgnoredDamageTypes: {(breakabledoor is null ? "Nan" : breakabledoor.IgnoredDamage)} => {DamageTypeIgnored}\n";
+                    Debug += $"RequiredPermissions: {door.KeycardPermissions} => {RequiredPermission}\n";
+                    Debug += $"RequireAllPermission: {door.Base.RequiredPermissions.RequireAll} => {RequireAllPermission}\n";
+                    Log.Debug(Debug);
+                }
+
+                if (Health is not null && breakabledoor is not null)
+                    breakabledoor.Health = Health.Value;
+                if (DamageTypeIgnored is not null && breakabledoor is not null)
+                    breakabledoor.IgnoredDamage = DamageTypeIgnored.Value;
+                if (RequiredPermission is not null)
+                    door.KeycardPermissions = RequiredPermission.Value;
+                if (RequireAllPermission is not null)
+                    door.Base.RequiredPermissions.RequireAll = RequireAllPermission.Value;
+            }
+        }
     }
 
     public class GlassBuild
     {
+        public GlassType? GlassType { get; set; }
+        
         public float? Health { get; set; }
         public bool? DisableScpDamage { get; set; }
+
+        public void Setup()
+        {
+            string debug = "[CustomWindow]\n";
+                
+            debug += $"Type: {GlassType}\n";
+            debug += $"Health: {Health} => {Health}\n";
+            debug += $"DisableScpDamage: {DisableScpDamage} => {DisableScpDamage}\n\n";
+
+            if (Health is not null)
+                Health = Health.Value;
+            if (DisableScpDamage is not null)
+                DisableScpDamage = DisableScpDamage.Value;
+                
+            Log.Debug(debug);
+            
+            foreach (Window window in Window.List)
+            {
+                if (GlassType != window.Type) continue;
+                
+                if (Health is not null)
+                    window.Health = Health.Value;
+                if (DisableScpDamage is not null)
+                    window.DisableScpDamage = DisableScpDamage.Value;
+            }
+        }
     }
 
     public class TeslaBuild
@@ -38,6 +99,41 @@ namespace FacilityManagement
         public float? IdleRange { get; set; }
         public float? ActivationTime { get; set; }
         public float? CooldownTime { get; set; }
+
+        public void Setup()
+        {
+            if (FacilityManagement.Instance.Config.Debug)
+            {
+                string Debug = "[CustomTesla]\n";
+                {
+                    Exiled.API.Features.TeslaGate tesla = Exiled.API.Features.TeslaGate.List.First();
+                    Debug += $"CooldownTime: {tesla.CooldownTime} => {CooldownTime}\n";
+                    Debug += $"IdleRange: {tesla.IdleRange} => {IdleRange}\n\n";
+                    Debug += $"TriggerRange: {tesla.TriggerRange} => {TriggerRange}\n\n";
+                    Debug += $"ActivationTime: {tesla.ActivationTime} => {ActivationTime}\n\n";
+                    Debug += $"IgnoredRoles: {string.Join(",", Exiled.API.Features.TeslaGate.IgnoredRoles)} => {(IgnoredRoles is null ? "Null" : string.Join(",", IgnoredRoles))}\n\n";
+                }
+                Log.Debug(Debug);
+            }
+
+            foreach (Exiled.API.Features.TeslaGate tesla in Exiled.API.Features.TeslaGate.List)
+            {
+                if(CooldownTime.HasValue)
+                    tesla.CooldownTime = CooldownTime.Value;
+                
+                if(IdleRange.HasValue)
+                    tesla.IdleRange = IdleRange.Value;
+                
+                if(TriggerRange.HasValue)
+                    tesla.TriggerRange = TriggerRange.Value;
+                
+                if(ActivationTime.HasValue)
+                    tesla.ActivationTime = ActivationTime.Value;
+            }
+
+            Exiled.API.Features.TeslaGate.IgnoredRoles = IgnoredRoles;
+                
+        }
     }
 
     public class Scp914Build
@@ -47,6 +143,35 @@ namespace FacilityManagement
         public float? ItemUpgradeTime { get; set; }
         public float? DoorOpenTime { get; set; }
         public float? ActivationCooldown { get; set; }
+
+        public void Setup()
+        {
+            Scp914Controller scp914 = Exiled.API.Features.Scp914.Scp914Controller;
+            string debug = "[Custom914]\n";
+            {
+                debug += $"KnobChangeCooldown: {scp914.KnobChangeCooldown} => {KnobChangeCooldown}\n";
+                debug += $"DoorOpenTime: {scp914.DoorOpenTime} => {DoorOpenTime}\n";
+                debug += $"ItemUpgradeTime: {scp914.ItemUpgradeTime} => {ItemUpgradeTime}\n";
+                debug += $"DoorCloseTime: {scp914.DoorCloseTime} => {DoorCloseTime}\n";
+                debug += $"TotalSequenceTime: {scp914.TotalSequenceTime} => {ActivationCooldown}\n";
+            }
+            Log.Debug(debug);
+
+            if (KnobChangeCooldown is not null)
+                scp914.KnobChangeCooldown = KnobChangeCooldown.Value;
+            
+            if (DoorOpenTime is not null)
+                scp914.DoorOpenTime = DoorOpenTime.Value;
+            
+            if (ItemUpgradeTime is not null)
+                scp914.ItemUpgradeTime = ItemUpgradeTime.Value;
+            
+            if (DoorCloseTime is not null)
+                scp914.DoorCloseTime = DoorCloseTime.Value;
+            
+            if (ActivationCooldown is not null)
+                scp914.TotalSequenceTime = ActivationCooldown.Value;
+        }
     }
 
     public class GeneratorBuild
@@ -56,7 +181,38 @@ namespace FacilityManagement
         public float? DoorPanelCooldown { get; set; }
         public float? InteractionCooldown { get; set; }
         public float? DeactivationTime { get; set; }
-        public Exiled.API.Enums.KeycardPermissions? RequiredPermission { get; set; }
+        public KeycardPermissions? RequiredPermission { get; set; }
+
+        public void Setup()
+        {
+            if (FacilityManagement.Instance.Config.Debug)
+            {
+                Generator generator = Generator.List.First();
+                string Debug = "[CustomGenerator]\n";
+                Debug += $"UnlockCooldown: {generator.UnlockCooldown} => {UnlockCooldown}\n";
+                Debug += $"LeverDelay: {generator.LeverDelay} => {LeverDelay}\n";
+                Debug += $"TogglePanelCooldown: {generator.TogglePanelCooldown} => {DoorPanelCooldown}\n";
+                Debug += $"InteractionCooldown: {generator.InteractionCooldown} => {InteractionCooldown}\n";
+                Debug += $"DeactivationTime: {generator.DeactivationTime} => {DeactivationTime}\n";
+                Debug += $"KeycardPermissions: {generator.KeycardPermissions} => {RequiredPermission}\n";
+                Log.Debug(Debug);
+            }
+            foreach (Generator generator in Generator.List)
+            {
+                if (UnlockCooldown is not null)
+                    generator.UnlockCooldown = UnlockCooldown.Value;
+                if (RequiredPermission is not null)
+                    generator.KeycardPermissions = RequiredPermission.Value;
+                if (LeverDelay is not null)
+                    generator.LeverDelay = LeverDelay.Value;
+                if (DoorPanelCooldown is not null)
+                    generator.TogglePanelCooldown = DoorPanelCooldown.Value;
+                if (InteractionCooldown is not null)
+                    generator.InteractionCooldown = InteractionCooldown.Value;
+                if (DeactivationTime is not null)
+                    generator.DeactivationTime = DeactivationTime.Value;
+            }
+        }
     }
 
     public class ItemBuild

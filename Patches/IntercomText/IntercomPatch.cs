@@ -36,7 +36,7 @@ namespace FacilityManagement.Patches.IntercomText
                         IntercomState.Cooldown => IntercomDisplay.IcomText.Restarting,
                         _ => IntercomDisplay.IcomText.Unknown,
                     };
-                    if (FacilityManagement.Singleton.Config.IntercomRefresh is not null)
+                    if (FacilityManagement.Instance.Config.IntercomRefresh is not null)
                     {
                         Timer += Time.deltaTime;
 
@@ -45,10 +45,10 @@ namespace FacilityManagement.Patches.IntercomText
 
                         Timer = 0f;
                     }
-                    if (!string.IsNullOrEmpty(FacilityManagement.Singleton.CustomText))
+                    if (!string.IsNullOrEmpty(FacilityManagement.Instance.CustomText))
                         value = IntercomDisplay.IcomText.Unknown;
 
-                    if (ServerConsole.Singleton.NameFormatter.Commands is null || FacilityManagement.Singleton.Config.CustomText is null || !FacilityManagement.Singleton.Config.CustomText.TryGetValue(value, out string content) || string.IsNullOrEmpty(content))
+                    if (ServerConsole.Singleton.NameFormatter.Commands is null || FacilityManagement.Instance.Config.CustomText is null || !FacilityManagement.Instance.Config.CustomText.TryGetValue(value, out string content) || string.IsNullOrEmpty(content))
                         return;
                     if (!ServerConsole.Singleton.NameFormatter.TryProcessExpression(content, "FacilityManagement", out string result))
                     {

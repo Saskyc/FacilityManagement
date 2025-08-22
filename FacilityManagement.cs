@@ -10,7 +10,7 @@
 
     public class FacilityManagement : Exiled.API.Features.Plugin<Config>
     {
-	    public static FacilityManagement Singleton;
+	    public static FacilityManagement Instance;
 
 	    public override string Name => "FacilityManagement";
 	    public override string Prefix => "FacilityManagement";
@@ -28,7 +28,7 @@
 
         public override void OnEnabled()
         {
-            Singleton = this;
+            Instance = this;
 
             RegisterEvents();
             RegisterPatch();
@@ -50,7 +50,10 @@
         private void RegisterEvents()
         {
             EventHandlers = new(this);
+            
             Server.WaitingForPlayers += EventHandlers.OnWaitingForPlayers;
+            Player.Verified += EventHandlers.OnVerified;
+            
             if (Config.InfiniteAmmo is not null)
                 Item.ChangingAmmo += EventHandlers.OnChangingAmmo;
             if (Config.EnergyMicroHid is not 1)
@@ -68,7 +71,8 @@
         private void UnRegisterEvents()
         {
             Server.WaitingForPlayers -= EventHandlers.OnWaitingForPlayers;
-
+            Player.Verified -= EventHandlers.OnVerified;
+            
             Item.ChangingAmmo -= EventHandlers.OnChangingAmmo;
             Player.UsingMicroHIDEnergy -= EventHandlers.OnUsingMicroHIDEnergy;
             Player.UsingRadioBattery -= EventHandlers.OnUsingRadioBattery;

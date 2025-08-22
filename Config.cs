@@ -24,6 +24,7 @@ namespace FacilityManagement
 
         [Description("Make infinite ammo for weapon.")]
         public float EnergyMicroHid { get; set; } = 1f;
+
         [Description("Make infinite ammo for weapon.")]
         public float EnergyRadio { get; set; } = 1f;
 
@@ -35,7 +36,7 @@ namespace FacilityManagement
             DoorPanelCooldown = 0.9f,
             InteractionCooldown = 0,
             DeactivationTime = 125,
-            RequiredPermission = Exiled.API.Enums.KeycardPermissions.ArmoryLevelOne,
+            RequiredPermission = KeycardPermissions.ArmoryLevelOne,
         };
 
         [Description("Sets the time for Lift to teleport")]
@@ -45,20 +46,28 @@ namespace FacilityManagement
         # Check GitHub ReadMe for more info (https://github.com/louis1706/FacilityManagement/blob/main/readme.md)")]
         public Dictionary<IntercomDisplay.IcomText, string> CustomText { get; set; } = new()
         {
-            {IntercomDisplay.IcomText.Ready, "Ready"},
-            {IntercomDisplay.IcomText.Transmitting, "{intercom_speaker_nickname} speaking {intercom_speech_remaining_time}"},
-            {IntercomDisplay.IcomText.TrasmittingBypass, "{intercom_speaker_nickname} speaking {intercom_speech_remaining_time}"},
-            {IntercomDisplay.IcomText.Restarting, "Restarting please wait for {intercom_remaining_cooldown}"},
-            {IntercomDisplay.IcomText.AdminUsing, "the Admin {intercom_speaker_nickname} is actually speaking"},
-            {IntercomDisplay.IcomText.Muted, "Issou you are muted"},
-            {IntercomDisplay.IcomText.Wait, "Wait"},
-            {IntercomDisplay.IcomText.Unknown, "Unknown"},
+            { IntercomDisplay.IcomText.Ready, "Ready" },
+            {
+                IntercomDisplay.IcomText.Transmitting,
+                "{intercom_speaker_nickname} speaking {intercom_speech_remaining_time}"
+            },
+            {
+                IntercomDisplay.IcomText.TrasmittingBypass,
+                "{intercom_speaker_nickname} speaking {intercom_speech_remaining_time}"
+            },
+            { IntercomDisplay.IcomText.Restarting, "Restarting please wait for {intercom_remaining_cooldown}" },
+            { IntercomDisplay.IcomText.AdminUsing, "the Admin {intercom_speaker_nickname} is actually speaking" },
+            { IntercomDisplay.IcomText.Muted, "Issou you are muted" },
+            { IntercomDisplay.IcomText.Wait, "Wait" },
+            { IntercomDisplay.IcomText.Unknown, "Unknown" },
         };
+
         [Description("How mush the CustomText for intercom will be refresh (empty make refresh everytick)")]
         public float? IntercomRefresh { get; set; } = null;
 
         [Description("If all items and ragdolls in the facility should be removed after detonation.")]
         public bool WarheadCleanup { get; set; } = true;
+
         [Description("Sets the config of Tesla.")]
         public TeslaBuild CustomTesla { get; set; } = new()
         {
@@ -76,52 +85,52 @@ namespace FacilityManagement
             ItemUpgradeTime = 10,
             DoorOpenTime = 13.5f,
             ActivationCooldown = 16,
+
         };
 
 
         [Description("Sets the health of breakable windows.")]
-        public Dictionary<GlassType, GlassBuild> CustomWindows { get; set; } = new()
-        {
+        public List<GlassBuild> CustomWindows { get; set; } =
+        [
+            new()
             {
-                GlassType.Scp079Trigger,
-                new GlassBuild{
-                        Health = 5,
-                        DisableScpDamage = true,
-                }
+                GlassType = GlassType.Scp079,
+                Health = 5,
+                DisableScpDamage = true
             },
-        };
+        ];
 
-        [Description("Sets the ignored damage of breakable Door (0 will make it Destructible for everything and -1 undestructible).")]
-        public Dictionary<DoorType, DoorBuild> CustomDoors { get; set; } = new()
-        {
+        [Description(
+            "Sets the ignored damage of breakable Door (0 will make it Destructible for everything and -1 undestructible).")]
+        public List<DoorBuild> CustomDoors { get; set; } =
+        [
+            new DoorBuild
             {
-                DoorType.CheckpointEzHczA,
-                new DoorBuild{
-                            Health = 30,
-                            RequiredPermission = KeycardPermissions.Checkpoints | KeycardPermissions.ScpOverride,
-                            RequireAllPermission = false,
-                            DamageTypeIgnored = DoorDamageType.Grenade | DoorDamageType.Weapon | DoorDamageType.Scp096,
-                }
+                DoorType = DoorType.CheckpointEzHczA,
+                Health = 30,
+                RequiredPermission = KeycardPermissions.Checkpoints | KeycardPermissions.ScpOverride,
+                RequireAllPermission = false,
+                DamageTypeIgnored = DoorDamageType.Grenade | DoorDamageType.Weapon | DoorDamageType.Scp096,
             },
+            
+            new DoorBuild
             {
-                DoorType.CheckpointEzHczB,
-                new DoorBuild{
-                            Health = 30,
-                            RequiredPermission = KeycardPermissions.Checkpoints | KeycardPermissions.ScpOverride,
-                            RequireAllPermission = false,
-                            DamageTypeIgnored = DoorDamageType.Grenade | DoorDamageType.Weapon | DoorDamageType.Scp096,
-                }
+                DoorType = DoorType.CheckpointEzHczB,
+                Health = 30,
+                RequiredPermission = KeycardPermissions.Checkpoints | KeycardPermissions.ScpOverride,
+                RequireAllPermission = false,
+                DamageTypeIgnored = DoorDamageType.Grenade | DoorDamageType.Weapon | DoorDamageType.Scp096,
             },
+            
+            new DoorBuild
             {
-                DoorType.GR18Inner,
-                new DoorBuild{
-                            Health = 150,
-                            RequiredPermission = KeycardPermissions.None,
-                            RequireAllPermission = null,
-                            DamageTypeIgnored = 0,
-                }
+                DoorType = DoorType.GR18Inner,
+                Health = 150,
+                RequiredPermission = KeycardPermissions.None,
+                RequireAllPermission = null,
+                DamageTypeIgnored = 0,
             },
-        };
+        ];
 
         [Description("Give to x RoleType Some AHP (old name for SCP of Humeshield that are now separated so this only give AHP now).")]
         public Dictionary<RoleTypeId, AhpProccessBuild> RoleTypeHumeShield { get; set; } = new()
@@ -144,7 +153,7 @@ namespace FacilityManagement
                 {
                     Custom = new Dictionary<string, string>()
                     {
-                        { nameof(Exiled.API.Features.Items.Keycard.Permissions), (KeycardPermissions.ContainmentLevelOne | KeycardPermissions.ArmoryLevelOne).ToString() },
+                        { nameof(Keycard.Permissions), (KeycardPermissions.ContainmentLevelOne | KeycardPermissions.ArmoryLevelOne).ToString() },
                     }
                 }
             },
@@ -153,7 +162,7 @@ namespace FacilityManagement
                 {
                     Custom = new Dictionary<string, string>()
                     {
-                        { nameof(Exiled.API.Features.Items.Keycard.Permissions), KeycardPermissions.ContainmentLevelTwo.ToString() },
+                        { nameof(Keycard.Permissions), KeycardPermissions.ContainmentLevelTwo.ToString() },
                     }
                 }
             },
@@ -171,8 +180,8 @@ namespace FacilityManagement
                 {
                     Custom = new Dictionary<string, string>()
                     {
-                        { nameof(Exiled.API.Features.Items.ExplosiveGrenade.FuseTime), 1.ToString() },
-                        { nameof(Exiled.API.Features.Items.ExplosiveGrenade.Scale), (Vector3.one * 2).ToString() },
+                        { nameof(ExplosiveGrenade.FuseTime), 1.ToString() },
+                        { nameof(ExplosiveGrenade.Scale), (Vector3.one * 2).ToString() },
                     }
                 }
             },

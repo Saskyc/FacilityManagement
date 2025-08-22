@@ -19,10 +19,10 @@ namespace FacilityManagement.Patches.IntercomText
 
             newInstructions.AddRange(new CodeInstruction[]
             {
-                new(OpCodes.Ldsfld, Field(typeof(FacilityManagement),nameof(FacilityManagement.Singleton))),
+                new(OpCodes.Ldsfld, Field(typeof(FacilityManagement),nameof(FacilityManagement.Instance))),
                 new(OpCodes.Ldarg_0),
                 new(OpCodes.Ldind_Ref),
-                new(OpCodes.Stfld, Field(typeof(FacilityManagement),nameof(FacilityManagement.Singleton.CustomText))),
+                new(OpCodes.Stfld, Field(typeof(FacilityManagement),nameof(FacilityManagement.Instance.CustomText))),
                 new(OpCodes.Ret),
             });
 
@@ -42,8 +42,8 @@ namespace FacilityManagement.Patches.IntercomText
 
             newInstructions.AddRange(new CodeInstruction[]
             {
-                new(OpCodes.Ldsfld, Field(typeof(FacilityManagement),nameof(FacilityManagement.Singleton))),
-                new(OpCodes.Ldfld, Field(typeof(FacilityManagement),nameof(FacilityManagement.Singleton.CustomText))),
+                new(OpCodes.Ldsfld, Field(typeof(FacilityManagement),nameof(FacilityManagement.Instance))),
+                new(OpCodes.Ldfld, Field(typeof(FacilityManagement),nameof(FacilityManagement.Instance.CustomText))),
                 new(OpCodes.Ret),
             });
 
